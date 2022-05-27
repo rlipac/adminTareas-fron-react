@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-import axios from "axios";
+import clienteAxios from "../config/ClienteAxios";
 
 //components
 import Alerta from "../components/Alerta";
@@ -13,6 +13,8 @@ const Registrar = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmarPassword, setConfirmarPassword] = useState('')
+
+ 
 
   const resetInputs = ()=>{
     setNombre('')
@@ -51,17 +53,22 @@ const Registrar = () => {
   
    // creado usuario con la Api Backend
     try {
-      const { data } = await axios.post(`${import.meta.env.VITE_BACKEND_URL}usuarios/`,
-      { nombre, email, password })
-     
+      
+      const URL = `/usuarios`;
+      
+      const { data } = await clienteAxios.post(URL,{ nombre, email, password })
+      console.log(URL)
+      console.log(data)
       resetInputs()
-    } catch (error) {
-     
       setAlerta({
-        msg: error.response.data.mensage,
-        error: true
+        msg: data.mensage,
+        error: false
       })
-    }
+     
+     
+    } catch (error) {
+      console.log(error.response)
+        }
     
     
   }
@@ -146,10 +153,10 @@ const Registrar = () => {
         </Link>
 
         <Link className="block text-center my-5  text-slate-500 uppercase text-sm hover:cursor-pointer hover:text-blue-700 transition-colors"
-          to="olvide-password"
-        >
-          Olvide mi password
-        </Link>
+            to="/olvide-password"
+          >
+            Olvide mi password
+          </Link>
       </nav>
     </>
 

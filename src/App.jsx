@@ -1,4 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+// providers
+import { AuthProvider } from './context/AuthProvider' // desctrucuramos el AuthProvider
+import {ProyectosProvider} from './context/ProyectosProvider'
 
 // components
 import AuthLayout from './layouts/AuthLayout'
@@ -8,24 +11,36 @@ import NotFound from './pages/NotFound'
 import NuevoPassword from './pages/NuevoPassword'
 import OlvidePassword from './pages/OlvidePassword'
 import Registrar from './pages/Registrar'
+import Proyectos from './pages/Proyectos'
+import RutaProtegida from './layouts/RutaProtegida'
+import NuevoProyecto from './pages/NuevoProyecto'
+
+
 
 function App() {
 
   return (
     <BrowserRouter>
+      <AuthProvider>
+        <ProyectosProvider>
+          <Routes>
+            <Route path='/' element={<AuthLayout />}>
+              <Route index element={<Login />} />
+              <Route path='registrar' element={<Registrar />} />
+              <Route path='olvide-password' element={<OlvidePassword />} />
+              <Route path='nuevo-password/:token' element={<NuevoPassword />} />
+              <Route path='confirmar-cuenta/:id' element={<ConfirmarCuenta />} />
+              <Route path=':error' element={<NotFound />} />
+              {/* Hack:  colocamos como parametro :error // caquier palabra  que no coincida con la ruta de las paginas */}
+            </Route>
+            <Route path='/proyectos' element={<RutaProtegida />}>
+              <Route index element={<Proyectos />} />
+              <Route path='crear-proyecto' element={<NuevoProyecto />} />
+            </Route>
+          </Routes>
+        </ProyectosProvider>
 
-      <Routes>
-        <Route path='/' element={<AuthLayout />}>
-          <Route index element={ <Login /> } />
-          <Route path='registrar' element={ <Registrar /> } />
-          <Route path='olvide-password' element={ <OlvidePassword /> } />
-          <Route path='nuevo-password/:token' element={ <NuevoPassword /> } />
-          <Route path='confirmar-cuenta/:id' element={ <ConfirmarCuenta />} />  
-          <Route path=':error' element={ <NotFound />} />  
-          {/* Hack:  colocamos como parametro :error // caquier palabra  que no coincida con la ruta de las paginas */}
-        </Route>
-      </Routes>
-
+      </AuthProvider>
     </BrowserRouter>
   )
 }
