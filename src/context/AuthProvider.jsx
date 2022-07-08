@@ -27,10 +27,10 @@ useEffect(()=>{
                         Authorization: `Bearer ${token}`
                     }
               }
-              const URL = `/usuarios/perfil`;
+              const URL = `/usuarios/perfil/ok`;
               const { data } = await clienteAxios(URL, config)// le pasamos el config
               setAuth(data)
-              navigate('/proyectos')
+            //   navigate('/proyectos')
               
           } catch (error) {
               console.log(error)

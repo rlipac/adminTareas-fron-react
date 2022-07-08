@@ -14,6 +14,8 @@ import Registrar from './pages/Registrar'
 import Proyectos from './pages/Proyectos'
 import RutaProtegida from './layouts/RutaProtegida'
 import NuevoProyecto from './pages/NuevoProyecto'
+import Proyecto from './pages/Proyecto'
+import EditarProyecto from './pages/EditarProyecto'
 
 
 
@@ -23,21 +25,26 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <ProyectosProvider>
-          <Routes>
-            <Route path='/' element={<AuthLayout />}>
-              <Route index element={<Login />} />
-              <Route path='registrar' element={<Registrar />} />
-              <Route path='olvide-password' element={<OlvidePassword />} />
-              <Route path='nuevo-password/:token' element={<NuevoPassword />} />
-              <Route path='confirmar-cuenta/:id' element={<ConfirmarCuenta />} />
-              <Route path=':error' element={<NotFound />} />
-              {/* Hack:  colocamos como parametro :error // caquier palabra  que no coincida con la ruta de las paginas */}
-            </Route>
-            <Route path='/proyectos' element={<RutaProtegida />}>
-              <Route index element={<Proyectos />} />
-              <Route path='crear-proyecto' element={<NuevoProyecto />} />
-            </Route>
-          </Routes>
+            <Routes>
+              <Route path='/' element={<AuthLayout />}>
+                <Route index element={<Login />} />
+                <Route path='registrar' element={<Registrar />} />
+                <Route path='olvide-password' element={<OlvidePassword />} />
+                <Route path='nuevo-password/:token' element={<NuevoPassword />} />
+                <Route path='confirmar-cuenta/:id' element={<ConfirmarCuenta />} />
+                <Route path=':error' element={<NotFound />} />
+                {/* Hack:  colocamos como parametro :error // caquier palabra  que no coincida con la ruta de las paginas */}
+              </Route>
+              <Route path='/proyectos' element={<RutaProtegida />}>
+                <Route index element={<Proyectos />} />
+                <Route path='crear-proyecto' element={<NuevoProyecto />} />
+                <Route path=':id' element={<Proyecto />} />
+                <Route path='editar/:id' element={<EditarProyecto />} />
+              </Route>
+            </Routes>
+            <Routes>
+              {/* otras rutas */}
+            </Routes>
         </ProyectosProvider>
 
       </AuthProvider>

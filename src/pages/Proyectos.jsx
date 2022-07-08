@@ -4,15 +4,15 @@ import useProyectos from '../hooks/useProyectos'
 
 const Proyectos = () => {
     const { proyectos, alerta  } = useProyectos()
-      console.log(proyectos)
+      
  
     const { msg }=  alerta
   return (
     <>
     { msg && <Alerta alerta={alerta} /> }
      <h1 className="text-4xl font-black">proyectos</h1>
-      <div className='mt-10 flex justify-center'>
-          {proyectos.length  ?
+      <div className='mt-10 flex flex-col justify-center'>
+          {proyectos?.length  ?
               proyectos.map(proyecto =>(
                 <PreviewProyectos
                   key={proyecto._id}

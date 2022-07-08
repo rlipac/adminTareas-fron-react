@@ -15,7 +15,7 @@ const Login = () => {
 
 const  { setAuth } = useAuth();
 
-
+const navigate = useNavigate()
 
   const resetInpust = ()=>{
     setEmail('')
@@ -73,6 +73,7 @@ const  { setAuth } = useAuth();
           resetInpust()
           localStorage.setItem('token', data.jwtToken);//guardando el token en localStorage
           setAuth(data)
+          navigate('/proyectos')
             
         } catch (error) {
           setAlerta({
