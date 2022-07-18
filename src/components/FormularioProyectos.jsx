@@ -18,8 +18,7 @@ const FormularioProyectos = () => {
 
     // props del provider
     const {  alerta, mostrarAlerta, submitProyecto, proyectoId,  } = useProyectos() // proyectoID objeto del la funcion proyectoId del provider
-    const { tareas }= proyectoId;
-    console.log('form royecto', proyectoId)
+   
   const resetInputs = ()=>{
     setId(null)  
     setNombre('')
@@ -51,7 +50,7 @@ const FormularioProyectos = () => {
             if ([nombre, descripcion, fechaEntraga, cliente].includes('')) {
                 const error = new Error("todos los campos son obligatorios")
                 mostrarAlerta({
-                msg: error,
+                msg: error.message,
                 error: true
                 })
                 return

@@ -12,34 +12,28 @@ import Proyectos from '../pages/Proyectos'
 
 const RutaProtegida = () => {
 
+  const { auth, cargando } = useAuth()
+  // console.log(auth)
 
-    const {auth, cargando} = useAuth()
-    console.log(auth)
-
-    if(cargando)return <h1 className='text-6xl font-medium'>Cardando...</h1>
+  if (cargando) return <h1 className='text-6xl font-medium'>Cardando...</h1>
   return (
     <>
+      {auth._id ?
 
-          
-          {auth._id ?
-          
-            (
-              <div className='bg-gray-100 '>
-                 <Header />
-                <div className='md:flex md:min-h-screen '>
-                  <Sidebar />
-                  <main className='flex-1 p-10 bg-white'>
-                   <Outlet />
-                  </main>
-                </div>
-                
-              </div>
-            )
-           : <Navigate to='/' />}
-           
+        (
+          <div className='bg-gray-200 '>
+            <Header />
+            <div className='md:flex md:min-h-screen '>
+              <Sidebar />
+              <main className='flex-1 p-10 bg-gray-100'>
+                <Outlet />
+              </main>
+            </div>
 
-           
-    </>  
+          </div>
+        )
+        : <Navigate to='/' />}
+    </>
   )
 }
 

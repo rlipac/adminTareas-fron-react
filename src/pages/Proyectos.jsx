@@ -7,6 +7,7 @@ const Proyectos = () => {
       
  
     const { msg }=  alerta
+    console.log(proyectos)
   return (
     <>
     { msg && <Alerta alerta={alerta} /> }
