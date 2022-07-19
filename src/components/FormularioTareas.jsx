@@ -124,7 +124,7 @@ const FormularioTareas = () => {
                     value={prioridad}
                 >
                     <option>--Selecionar-- </option>
-                    <option value="">-- Seleccionar Marca --</option>
+                    <option value="">-- Seleccionar La Prioridad --</option>
                     {OPCIONES.map(opcion => (
                         <option
 

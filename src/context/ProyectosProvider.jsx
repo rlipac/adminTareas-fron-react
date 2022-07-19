@@ -58,6 +58,9 @@ const ProyectosProvider = ({ children }) => {
                 const URL = `/proyectos`;
                 const { data } = await clienteAxios(URL, config)
                 setProyectos(data.proyectos)
+                setTimeout(()=>{
+                    setAlerta({})
+                },2000)
 
             } catch (error) {
                 
@@ -75,6 +78,9 @@ const ProyectosProvider = ({ children }) => {
 
     }, [])// en el array vacio se coloca state que se espera que cambie
     //
+
+ 
+
     const submitProyecto = async (proyecto) => {
         console.log(proyecto.id)
         if (proyecto.id) {
@@ -108,9 +114,9 @@ const ProyectosProvider = ({ children }) => {
             })
 
             setTimeout(() => {
-                //    setAlerta({})  
+                    setAlerta({})  
                 navigate('/proyectos')
-            }, 500)
+            }, 1000)
         } catch (error) {
             console.log(error)
             setAlerta({
@@ -570,12 +576,21 @@ const ProyectosProvider = ({ children }) => {
 
     }
 
+
+        // buscarproyecots
+        const buscadorDeProyectos=(id)=>{
+           
+                navigate(`/proyectos/${id}`) 
+        }
+   
+
     return (
         <ProyectosContext.Provider
             value={{
 
                 cargando,
                 alerta,
+                buscadorDeProyectos,
                 mostrarAlerta,
                 submitProyecto,
                 obtenerproyectoId,
@@ -588,7 +603,7 @@ const ProyectosProvider = ({ children }) => {
                 proyectos,
                 proyectoId,
                 tarea,
-                tareas,
+                tareas,              
                 submitTarea,
                 limpiarTarea,
                 eliminarTarea,

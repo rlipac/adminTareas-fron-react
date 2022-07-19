@@ -1,6 +1,13 @@
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
+
+
+import ModalBuscador from './ModalBuscador'
 
 const Header = () => {
+
+  const params = useParams();
+  console.log('id-> ', params.id)
+
   return (
     <header className=" px-4 py-5 bg-white border-b">
        <div className="flex flex-col md:flex-row justify-between jusify-between   ">
@@ -8,9 +15,17 @@ const Header = () => {
                 UpTask
             </h2>
             <div className="flex flex-col md:flex-row items-center gap-4  ">
-              <button className="text-white text-md font-bold uppercase p-2 bg-sky-500 rounded-lg">
-                Buscar Proyectos
-              </button>
+
+              {/*  muestra el boton Buscar proyecto SOLO si exite el id */}
+            { params.id ? '' : (
+                  
+                  <button  className="text-white text-md font-bold uppercase p-2 bg-sky-500 rounded-lg"
+                  data-bs-toggle="modal" data-bs-target="#modalBuscador"
+                   >
+                      Buscar Proyectos
+                   </button>
+                  ) }
+             
                 <Link
                     to='/proyectos'
                     className="font-bold uppercase"
@@ -22,6 +37,10 @@ const Header = () => {
                     >
                         Cerrar Sesion
                 </button>
+
+               
+                <ModalBuscador />
+                
             </div>
      </div> 
       

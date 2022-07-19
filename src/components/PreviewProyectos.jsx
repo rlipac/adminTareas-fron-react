@@ -8,7 +8,7 @@ const PreviewProyectos = ({proyecto}) => {
   
 
     const {_id, nombre, descripcion, fechaEntrega, cliente, createdAt, creador} = proyecto;
-    console.log('proyecto prew-> ', creador._id,' auth--> ',  auth._id)
+
   
   return (
     <div className="border-b p-5 flex flex-col md:flex-row justify-between">

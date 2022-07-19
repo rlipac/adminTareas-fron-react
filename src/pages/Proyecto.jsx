@@ -1,5 +1,6 @@
 import { useEffect, useState, Fragment } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { io } from 'socket.io-client'
 
 
 // hoocks
@@ -15,6 +16,8 @@ import Alerta from '../components/Alerta'
 import Colaborador from '../components/Colaborador'
 import ModalEliminarColaborador from '../components/ModalEliminarColaborador'
 
+
+let socket;
 
 const Proyecto = () => {
 
@@ -33,7 +36,7 @@ const Proyecto = () => {
 
 
   const { id } = params;
-console.log('proyecto -> ', proyectoId)
+
 
   useEffect(() => {
 
@@ -41,6 +44,22 @@ console.log('proyecto -> ', proyectoId)
     obtenerproyectoId(id) //le pasamos el ID del proyecto como parametro ppara que lo busque
 
   }, [])
+
+  useEffect(()=>{
+      
+    //const urlBack = import.meta.env.VITE_BACKEND_URL; // url servidor back
+    socket = io(import.meta.env.VITE_BACKEND_URL);
+    socket.emit('abrir proyecto', params.id)
+    
+  },[])
+
+  useEffect(()=>{
+    socket.on('respuesta', (persona)=>{
+      console.log(persona)
+    })
+  })
+
+
 
   const { msg } = alerta
   return (
