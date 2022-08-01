@@ -1,12 +1,39 @@
+
 import { Link, useParams } from "react-router-dom"
+import { io } from 'socket.io-client'
 
 
 import ModalBuscador from './ModalBuscador'
+//hooks
+
+import useProyectos from '../hooks/useProyectos'
+
+import useAuth from '../hooks/useAuth'
+
+
+let socket;
 
 const Header = () => {
 
   const params = useParams();
-  console.log('id-> ', params.id)
+
+  const { cerrarSesionProyectos } = useProyectos();
+
+  const { cerrarSesionAuth, auth } = useAuth();
+
+
+
+
+
+  const handleCerrarSescion = () =>{
+   
+      cerrarSesionProyectos()
+      cerrarSesionAuth()
+      localStorage.removeItem('token')
+
+   
+        
+  } 
 
   return (
     <header className=" px-4 py-5 bg-white border-b">
@@ -33,6 +60,7 @@ const Header = () => {
                         Proyectos
                 </Link>
                 <button
+                        onClick={handleCerrarSescion}
                         className="bg-blue-600 text-center text-white rounded-sm px-2 py-1 uppercase font-bold "
                     >
                         Cerrar Sesion

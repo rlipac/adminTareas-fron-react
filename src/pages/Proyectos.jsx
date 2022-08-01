@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-// import { io } from 'socket.io-client'
+import { io } from 'socket.io-client'
 
 //Components
 import Alerta from '../components/Alerta'
@@ -7,25 +7,40 @@ import PreviewProyectos from '../components/PreviewProyectos'
 
 //Hooks
 import useProyectos from '../hooks/useProyectos'
+import useAuth from '../hooks/useAuth'
 
-// variables 
-// let socket;
+// variables Globales
+
+
+let socket;
 
 const Proyectos = () => {
-    const { proyectos, alerta  } = useProyectos()
-    // const [ misProyectos, setMisproyectos ] = useState({})
-    // setMisproyectos(proyectos)
+    const { proyectos, alerta, addColaboradorProyectos  } = useProyectos()
+    const { auth } =useAuth()
+ 
 
     // conecta el soket del backEnd con el frontEnd
-    // useEffect(()=>{
-      
-    //   const urlBack = import.meta.env.VITE_BACKEND_URL; // url servidor back
-    //   socket = io(urlBack);
-    //   socket.emit('hola', proyectos)
-    //   socket.on('respuesta',()=>{
-    //     console.log('hola desde el Front')
-    //   })
-    // })
+    useEffect(()=>{
+       
+      socket = io(import.meta.env.VITE_BACKEND_URL);// me conecto al servidor
+
+    },[])
+
+   
+    // respuesta a sala juan
+    useEffect(()=>{
+ 
+      socket.emit('proyecto asignado', (proyectoActualizado)=>{
+
+        if(proyectoActualizado.colaborador._id === auth._id){
+          addColaboradorProyectos(proyectoActualizado)
+
+        }
+
+      })
+     
+  
+    })
    
   //Fin conecta el soket del backEnd con el frontEnd
 

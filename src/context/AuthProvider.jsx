@@ -22,6 +22,7 @@ useEffect(()=>{
         
           try {
               const config = {
+                   
                     headers: {
                         "Content-Type":"application/json",
                         Authorization: `Bearer ${token}`
@@ -42,12 +43,19 @@ useEffect(()=>{
      autenticarUsuario() 
 },[])
 
+// logout
+
+const cerrarSesionAuth=()=>{
+    setAuth({})
+}
 return(
     <AuthContext.Provider
         value={{
             auth,
             setAuth,
-            cargando
+            cargando,
+            //cerrarSescion
+            cerrarSesionAuth
         }}
     >
         { children } 

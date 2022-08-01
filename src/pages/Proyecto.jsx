@@ -29,7 +29,8 @@ const Proyecto = () => {
 
 
 
-  const { obtenerproyectoId, proyectoId, cargando, alerta, limpiarTarea } = useProyectos();
+  const { obtenerproyectoId, proyectoId, cargando, alerta, limpiarTarea,
+    eliminarTareaProyecto, submitTareasproyecto, editarTareaProyecto, cambioEstadoTareaProyecto } = useProyectos();
 
 
   const { nombre, descripcion, cliente, tareas, _id } = proyectoId;
@@ -47,16 +48,41 @@ const Proyecto = () => {
 
   useEffect(()=>{
       
-    //const urlBack = import.meta.env.VITE_BACKEND_URL; // url servidor back
-    socket = io(import.meta.env.VITE_BACKEND_URL);
-    socket.emit('abrir proyecto', params.id)
+   
+    socket = io(import.meta.env.VITE_BACKEND_URL);// me conecto al servidor
+    socket.emit('abrir proyecto', id);// le digo enque proyecto estoy
     
   },[])
 
+  // respuesta a sala juan
   useEffect(()=>{
-    socket.on('respuesta', (persona)=>{
-      console.log(persona)
-    })
+    socket.on('tarea agregada', (tareaNueva)=>{
+      console.log('nueva tarea SOKET Io ->',tareaNueva)
+      if(tareaNueva.proyecto === proyectoId._id){ // si es el mismo proyecto ejecuta lo siguiente
+        submitTareasproyecto(tareaNueva);// le pasamo la tarea Nueva
+      }
+      return
+     
+    });
+
+    socket.on('tarea eliminada', tareaEliminada =>{
+      if(tareaEliminada.proyecto === proyectoId._id){
+        eliminarTareaProyecto(tareaEliminada);
+      }
+    });
+
+    socket.on('tarea actualizada', tareaActualizada =>{ 
+      if(tareaActualizada.proyecto._id === proyectoId._id){
+        editarTareaProyecto(tareaActualizada);
+      }
+    });
+
+    socket.on('estado actualizado', tareaActualizada =>{ 
+      if(tareaActualizada.proyecto._id === proyectoId._id){
+        cambioEstadoTareaProyecto(tareaActualizada);
+      }
+    });
+
   })
 
 

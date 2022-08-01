@@ -76,8 +76,9 @@ const navigate = useNavigate()
           navigate('/proyectos')
             
         } catch (error) {
+          console.log('mi erro -> ',error.response.data.msg);
           setAlerta({
-            msg:error.response.data.mensage,
+            msg: error.response.data.msg,
             error:true
           })
           resetInpust()

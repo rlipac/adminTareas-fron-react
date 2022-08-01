@@ -1,12 +1,14 @@
 import { useState, useEffect, createContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { io } from 'socket.io-client'
 // axios
 import clienteAxios from '../config/clienteAxios'
 
 // mis hooks
 
+import useAuth from '../hooks/useAuth'
 
-
+let socket;
 
 const ProyectosContext = createContext()
 
@@ -14,7 +16,8 @@ const ProyectosProvider = ({ children }) => {
     const params = useParams()
     //const { id } = params;
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const { auth } = useAuth(); // para eliminar error al cargar proyectos al iniciar session
 
     // Tareas
     const [tarea, setTarea] = useState({});
@@ -39,9 +42,9 @@ const ProyectosProvider = ({ children }) => {
         }, 1500)
     }
 
+ 
+
     useEffect(() => {
-
-
         const listarProyectos = async () => {
 
             try {
@@ -63,8 +66,7 @@ const ProyectosProvider = ({ children }) => {
                 },2000)
 
             } catch (error) {
-                
-               
+                             
                 setAlerta({
                     msg: error.response.data,
                     error: true
@@ -76,10 +78,17 @@ const ProyectosProvider = ({ children }) => {
         }
         listarProyectos()
 
-    }, [])// en el array vacio se coloca state que se espera que cambie
+    }, [auth])// en el array vacio se coloca state que se espera que cambie
     //
 
- 
+///?? sokect io
+    useEffect(()=>{
+      
+   
+        socket = io(import.meta.env.VITE_BACKEND_URL);// me conecto al servidor
+       // socket.emit('abrir proyecto', id);// le digo enque proyecto estoy
+        
+      },[])
 
     const submitProyecto = async (proyecto) => {
         console.log(proyecto.id)
@@ -112,11 +121,8 @@ const ProyectosProvider = ({ children }) => {
                 msg: 'datos guardados correctamente',
                 error: false
             })
-
-            setTimeout(() => {
-                    setAlerta({})  
-                navigate('/proyectos')
-            }, 1000)
+            navigate('/proyectos')
+          
         } catch (error) {
             console.log(error)
             setAlerta({
@@ -245,15 +251,15 @@ const ProyectosProvider = ({ children }) => {
     //? Tareas
 
     const submitTarea = async (tarea) => {
-        console.log('tarea id ', tarea.id)
+       
         if (tarea.id) {
             await updateTarea(tarea);
-            console.log('editar TareaID =>', tarea.id)
+            // console.log('editar TareaID =>', tarea.id)
             //   await  editarTarea(tarea)
             //navigate('/proyectos')   
         } else {
             await guardarTarea(tarea);
-            console.log('Guardar.. Tarea=>', tarea)
+            // console.log('Guardar.. Tarea=>', tarea)
             //   await  guardarTarea(tarea)
             //navigate('/proyectos')   
         }
@@ -278,15 +284,9 @@ const ProyectosProvider = ({ children }) => {
 
             const URL = `/tareas/${tarea.id}`;
             const { data } = await clienteAxios.put(URL, tarea, config)// 1-URL , 2- datos, 3-configiracion
-            setTarea(data.tareaActualizada)
-            // sincronisado el state //? 
-
-            const proyectoIdActualizado = { ...proyectoId }; //paso 1 creamos una copia del proyectoId 
-            //paso 2 recorremos proyecotID
-            // paso 3 comparamos y remplazamos ( buscamos la tarea que tenga el id que sea igual al id de la tarea actualizada y la remplazamos)
-            proyectoIdActualizado.tareas = proyectoIdActualizado.tareas.map(tareaState => // devuelve un ternario
-                tareaState._id === data.tareaActualizada._id ? data.tareaActualizada : tareaState)
-            setProyectoId(proyectoIdActualizado);
+           
+            // SOCKET IO
+             socket.emit('editar tarea', data.tareaActualizada)
 
             setAlerta({
                 msg: 'El Proyecto se Actualizo ! correctamente',
@@ -309,7 +309,9 @@ const ProyectosProvider = ({ children }) => {
     }
 
     const guardarTarea = async (tarea) => {
-        console.log('Guardando tarea....')
+
+       
+        // console.log('Guardando tarea....')
         try {
             const token = localStorage.getItem('token');
             if (!token) return
@@ -321,18 +323,18 @@ const ProyectosProvider = ({ children }) => {
             }
             const URL = `/tareas`;
             const { data } = await clienteAxios.post(URL, tarea, config)// 1-URL , 2- datos, 3-configiracion
-            const proyectoActualizado = proyectoId.tareas.push(data.tareaGuardada); // actualiza el state Tareas
-            setTareas(proyectoActualizado)
-            // setTareas(data.tareaGuardada)
+          
             setAlerta({
                 msg: 'datos guardados correctamente',
                 error: false
             })
 
-            setTimeout(() => {
-                setAlerta({})
-
-            }, 1000)
+            // soket.io
+            socket.emit('nueva tarea', data.tareaGuardada)
+            // setTimeout(() => {
+            //     setAlerta({})
+            //     navigate('/proyectos')
+            // }, 1000)
         } catch (error) {
             console.log(error)
             setAlerta({
@@ -359,16 +361,23 @@ const ProyectosProvider = ({ children }) => {
             const { data } = await clienteAxios.delete(URL, config) // 1-URL , 2- datos, 3-configiracion
             // console.log(data.tarea._id)
             // sincronizando el state proyectos
-            const proyectoIdActualizado = { ...proyectoId };
-            proyectoIdActualizado.tareas = proyectoIdActualizado.tareas.filter(tareaState =>
-                tareaState._id != data.tarea._id)
-            // const result = words.filter(word => word != 'spray');
-            setProyectoId(proyectoIdActualizado)
+
+            // const proyectoIdActualizado = { ...proyectoId };
+            // proyectoIdActualizado.tareas = proyectoIdActualizado.tareas.filter(tareaState =>
+            //     tareaState._id != data.tarea._id)
+            // // const result = words.filter(word => word != 'spray');
+            // setProyectoId(proyectoIdActualizado)
 
 
             //  setTareas(tareasActualizadas)
 
             //Fin sincronizando el state proyectos
+
+
+            // socket.IO
+
+            socket.emit('eliminar tarea', tarea);
+
             setAlerta({
                 msg: 'El Proyecto se ELIMINO! correctamente',
                 error: false
@@ -421,12 +430,9 @@ const ProyectosProvider = ({ children }) => {
           
             const { data } = await clienteAxios.post(URL, {}, config); // 1-URL , 2- datos, 3-configiracion
 
-            //  sincronizando el state proyectos
-            //?compara tareaState._id con data.tarea._id si es igual develeve data.tarea si no es igual mantiene tareaState 
-            const proyectoIdActualizado = { ...proyectoId };
-            proyectoIdActualizado.tareas = proyectoIdActualizado.tareas.map(
-                tareaState => tareaState._id == data.tareaCompletada._id ? data.tareaCompletada : tareaState);
-            setProyectoId(proyectoIdActualizado)
+                // SOCKET
+                socket.emit('cambiar estado', data.tareaCompletada )
+
             setTarea({})
         } catch (error) {
             console.log(error.response.data.msg)
@@ -485,7 +491,7 @@ const ProyectosProvider = ({ children }) => {
 
     const agregarColaborador = async email => {
         // console.log('agregar colaborador...', email)
-        console.log(proyectoId)
+       
         try {
 
             const token = localStorage.getItem('token');
@@ -499,6 +505,9 @@ const ProyectosProvider = ({ children }) => {
             const URL = `/proyectos/colaborador/${proyectoId._id}`;
             const { data } = await clienteAxios.post(URL, email, config)
             console.log(data.proyecto)
+
+            //SOCKET
+            socket.emit('agregar colaborador', data.proyecto)
 
             setAlerta({
                 msg: data.msg,
@@ -583,6 +592,58 @@ const ProyectosProvider = ({ children }) => {
                 navigate(`/proyectos/${id}`) 
         }
    
+//?Funciones para  SOCKET IO
+
+const submitTareasproyecto = (tarea) =>{
+    
+   const proyectoActualizado = { ...proyectoId }; // creamos una copia
+   proyectoActualizado.tareas = [...proyectoActualizado.tareas, tarea] // actulizamos el state
+   setProyectoId(proyectoActualizado)
+}
+
+const eliminarTareaProyecto =(tarea)=>{
+
+     const proyectoIdActualizado = { ...proyectoId };
+            proyectoIdActualizado.tareas = proyectoIdActualizado.tareas.filter(tareaState =>
+                tareaState._id != tarea._id)
+            // const result = words.filter(word => word != 'spray');
+            setProyectoId(proyectoIdActualizado)
+
+}
+
+const  editarTareaProyecto =(tarea)=>{
+    console.log('-->', tarea)
+    const proyectoActualizado = { ...proyectoId }
+    proyectoActualizado.tareas = proyectoActualizado.tareas.map( tareaState =>
+    tareaState._id === tarea._id ? tarea : tareaState )
+
+     setProyectoId(proyectoActualizado);
+}
+
+const  cambioEstadoTareaProyecto =(tarea)=>{
+  //  sincronizando el state proyectos
+            //?compara tareaState._id con data.tarea._id si es igual develeve data.tarea si no es igual mantiene tareaState 
+            const proyectoIdActualizado = { ...proyectoId };
+            proyectoIdActualizado.tareas = proyectoIdActualizado.tareas.map(
+                tareaState => tareaState._id == tarea._id ? tarea : tareaState);
+            setProyectoId(proyectoIdActualizado)
+
+}
+
+const  addColaboradorProyectos = (proyecto)=>{
+
+    console.log('proyecto actualizado -> ', proyecto)
+
+    const proyectosActualizados = proyectos.map(proyectoState => proyectoState._id == proyecto._id ? proyecto : proyectoState);
+    setProyectos(proyectosActualizados);
+}
+
+/// cerrar sesion 
+const cerrarSesionProyectos = ()=>{
+    setProyectoId({})
+    setProyectos({})
+    setAlerta({})
+}
 
     return (
         <ProyectosContext.Provider
@@ -610,7 +671,15 @@ const ProyectosProvider = ({ children }) => {
                 modalDeleteTarea,
                 editarTarea,
                 guardarTarea,
-                cambiarEstadoTareas
+                cambiarEstadoTareas,
+                // Funciones para Socket Io(crud real time)
+                submitTareasproyecto,
+                eliminarTareaProyecto,
+                editarTareaProyecto,
+                cambioEstadoTareaProyecto,
+                addColaboradorProyectos,
+                // cerrar sesion
+                cerrarSesionProyectos
             }}
         >
             {children}
